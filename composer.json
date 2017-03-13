@@ -1,0 +1,9 @@
+{
+    "require": {
+        "rmccue/requests": "^1.7",
+        "geoip2/geoip2": "~2.0",
+        "mobiledetect/mobiledetectlib": "^2.8"
+    },
+    "require-dev": {
+    }
+}
