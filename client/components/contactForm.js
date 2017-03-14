@@ -10,12 +10,7 @@ const ContactForm = React.createClass({
 			email: '',
 			phone: '',
 			company: '',
-			errors: {
-				name: false,
-				email: false,
-				phone: false,
-				company: false
-			},
+			errors: {},
 			rules: {
 				 name: 'isEmpty',
 				 email: 'isEmail',
@@ -43,7 +38,7 @@ const ContactForm = React.createClass({
 	
 	validate() {
 		let errs = {};
-		let v = validate(this.state.errors, this.state.rules, this.state);
+		let v = validate(this.state.rules, this.state);
 
 		this.setState({errors: v.errors});
 		return v.isValid;
@@ -61,7 +56,7 @@ const ContactForm = React.createClass({
 		const data = this.state;
 		request
 		.post(endpoint, data)
-		.then()
+		.then(res => console.log(res.data));
 	},
 
 	render() {

@@ -37,20 +37,18 @@ function runValidation(ruleName, param) {
 	return validations[ruleName] ? validations[ruleName](param) : false;
 }
 
-export function validate(errors = {}, rules = {}, fields = {}) {
+export function validate(rules = {}, fields = {}) {
 		let errs = {};
-	
-		const runValidations = Object.keys(errors)
-			.map(field => {
+		const names = Object.keys(rules);
+		const runValidations = names.map(field => {
+			let val = rules[field].split('|').map(rule => {
+				return runValidation(rule, fields[field]);
+			});
 
-				let val = rules[field].split('|').map(rule => {
-					return runValidation(rule, fields[field]);
-				});
+			let isValid = !val.every(item => item == false);
 
-				let isValid = !val.every(item => item == false);
-
-				errs = {...errs, [field]: isValid};
-				return val;
+			errs = {...errs, [field]: isValid};
+			return val;
 		});
 
 		return {
