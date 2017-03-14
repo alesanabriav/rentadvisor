@@ -1,9 +1,14 @@
 export function isNotEmail(email) {
-	const re = /\S+@\S+\.\S+/;
-	return !re.test(email);
+	const reg = /\S+@\S+\.\S+/;
+	return !reg.test(email);
 }
 
 export function isEmpty(str) {
-	const re = /([^\s])/;
-	return !re.test(str);
+	const reg = /([^\s])/;
+	return !reg.test(str);
+}
+
+export function isNotPhone(phone) {
+	const reg = /((\(.*\))|([0-9]))/;
+	return !reg.test(phone); 
 }

@@ -1,15 +1,20 @@
 import React from 'react';
 import request from 'axios';
-import { isNotEmail, isEmpty } from '../lib/validations';
+import { isNotEmail, isNotPhone, isEmpty } from '../lib/validations';
+const endpoint = '';
 
 const ContactForm = React.createClass({
 	getInitialState() {
 		return {
 			name: '',
 			email: '',
+			phone: '',
+			company: '',
 			errors: {
 				name: false,
-				email: false
+				email: false,
+				phone: false,
+				company: false
 			}
 		}
 	},
@@ -26,6 +31,7 @@ const ContactForm = React.createClass({
 			let val;
 			val = isEmpty( this.state[field] );
 			if(field == 'email') val = isNotEmail( this.state[field] );
+			if(field == 'phone') val = isNotPhone( this.state[field] );
 			errs = {...errs, [field]: val};
 			return val;
 		});
@@ -45,10 +51,18 @@ const ContactForm = React.createClass({
 		});
 	},
 
+	storeContact() {
+		const data = this.state;
+		request
+		.post(endpoint, data)
+		.then()
+	},
+
 	render() {
-		const { errors, name, email } = this.state;
+		const { errors, name, email, phone, company } = this.state;
 		let errName = errors['name'] ? { color: '#F1364E' } : { display: 'none' };
 		let errEmail = errors['email'] ? { color: '#F1364E' } : { display: 'none' };
+		let errPhone = errors['phone'] ? { color: '#F1364E' } : { display: 'none' };
 
 		return ( 
 			<form onSubmit={this.handleSubmit}>
@@ -72,6 +86,28 @@ const ContactForm = React.createClass({
 						onChange={this.handleChange.bind(null, 'email')} 
 					/>
 					<p className="help-block" style={errEmail} > Debe ser un email valido. </p>
+				</div>
+
+				<div className="form-group">
+					<input 
+						placeholder="Teléfono" 
+						type="text" 
+						className="form-control" 
+						value={ phone }
+						onChange={this.handleChange.bind(null, 'phone')} 
+					/>
+					<p className="help-block" style={errPhone} >Debe ser un teléfono valido. </p>
+				</div>
+
+				<div className="form-group">
+					<input 
+						placeholder="Empresa" 
+						type="text" 
+						className="form-control" 
+						value={ company }
+						onChange={this.handleChange.bind(null, 'company')} 
+					/>
+					<p className="help-block" style={errEmail} >Empresa requerida.</p>
 				</div>
 				
 				<div className="form-group">
