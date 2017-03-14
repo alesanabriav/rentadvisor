@@ -24,16 +24,17 @@ function higherThen(str, num) {
 	higherThen
 };
 
-function runValidation(rule, param) {
+function runValidation(ruleName, param) {
 	let patt = new RegExp('([A-Z]+)(:)([0-9]+)', 'i');
-	if(patt.test(rule)) {
-		let r = rule.split(':');
-		let func = r[0];
+
+	if(patt.test(ruleName)) {
+		let r = ruleName.split(':');
+		let funcName = r[0];
 		let funcParam = r[1];
-		return validations[func] ? validations[func](param, funcParam) : false;
+		return validations[funcName] ? validations[funcName](param, funcParam) : false;
 	}
 
-	return validations[rule] ? validations[rule](param) : false;
+	return validations[ruleName] ? validations[ruleName](param) : false;
 }
 
 export function validate(errors = {}, rules = {}, fields = {}) {

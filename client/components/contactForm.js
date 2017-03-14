@@ -46,13 +46,15 @@ const ContactForm = React.createClass({
 		let v = validate(this.state.errors, this.state.rules, this.state);
 
 		this.setState({errors: v.errors});
-		console.log(v.isValid);
+		return v.isValid;
 	},
 
 	handleSubmit(e) {
 		e.preventDefault();
 
-		this.validate();
+		if(this.validate()) {
+			console.log(this.state);
+		}
 	},
 
 	storeContact() {
