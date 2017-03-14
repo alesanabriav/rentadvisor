@@ -1,6 +1,6 @@
 import React from 'react';
 import request from 'axios';
-import { isNotEmail, isNotPhone, isEmpty } from '../lib/validations';
+import { validations, validate } from '../lib/validations';
 const endpoint = '';
 
 const ContactForm = React.createClass({
@@ -15,6 +15,23 @@ const ContactForm = React.createClass({
 				email: false,
 				phone: false,
 				company: false
+			},
+			rules: {
+				 name: 'isEmpty',
+				 email: 'isEmail',
+				 phone: 'containsNumber|higherThen:7',
+				 company: 'isEmpty'
+			}
+		}
+	},
+
+	getDefaultProps() {
+		return {
+			messages: {
+				name: ' Nombre requerido.',
+				email: 'Debe ser un email valido.',
+				phone: 'Debe ser un teléfono valido.',
+				company: 'Empresa requerida.'
 			}
 		}
 	},
@@ -26,29 +43,22 @@ const ContactForm = React.createClass({
 	
 	validate() {
 		let errs = {};
-		const validations = Object.keys(this.state.errors)
-		.map(field => {
-			let val;
-			val = isEmpty( this.state[field] );
-			if(field == 'email') val = isNotEmail( this.state[field] );
-			if(field == 'phone') val = isNotPhone( this.state[field] );
-			errs = {...errs, [field]: val};
-			return val;
-		});
-
-		this.setState({errors: errs});
-		return Promise.all(validations);
+		let v = validate(this.state.errors, this.state.rules, this.state);
+		console.log(v);
+		this.setState({errors: v.errors});
+		return v.promise;
 	},
 
 	handleSubmit(e) {
 		e.preventDefault();
+
 		this.validate()
-		.then(res => res.every(item => item == false))
-		.then(isValid => {
-			if(isValid) {
-				console.log(this.state);
-			}
-		});
+			.then(res => res.every(item => item == false))
+			.then(isValid => {
+				if(isValid) {
+					console.log(this.state);
+				}
+			});
 	},
 
 	storeContact() {
@@ -60,9 +70,13 @@ const ContactForm = React.createClass({
 
 	render() {
 		const { errors, name, email, phone, company } = this.state;
-		let errName = errors['name'] ? { color: '#F1364E' } : { display: 'none' };
-		let errEmail = errors['email'] ? { color: '#F1364E' } : { display: 'none' };
-		let errPhone = errors['phone'] ? { color: '#F1364E' } : { display: 'none' };
+		const { messages } = this.props;
+		let styleErr = { color: '#F1364E' };
+		let styleHidden = { display: 'none' };
+		let errName = errors['name'] ? styleErr : styleHidden;
+		let errEmail = errors['email'] ? styleErr : styleHidden;
+		let errPhone = errors['phone'] ? styleErr : styleHidden;
+		let errCompany = errors['company'] ? styleErr : styleHidden;
 
 		return ( 
 			<form onSubmit={this.handleSubmit}>
@@ -74,7 +88,7 @@ const ContactForm = React.createClass({
 						value={ name }
 						onChange={this.handleChange.bind(null, 'name')} 
 					/>
-					<p className="help-block" style={errName} > Nombre requerido. </p>
+					<p className="help-block" style={errName}>{messages.name}</p>
 				</div>
 
 				<div className="form-group">
@@ -85,7 +99,7 @@ const ContactForm = React.createClass({
 						value={ email }
 						onChange={this.handleChange.bind(null, 'email')} 
 					/>
-					<p className="help-block" style={errEmail} > Debe ser un email valido. </p>
+					<p className="help-block" style={errEmail}>{messages.email}</p>
 				</div>
 
 				<div className="form-group">
@@ -96,7 +110,7 @@ const ContactForm = React.createClass({
 						value={ phone }
 						onChange={this.handleChange.bind(null, 'phone')} 
 					/>
-					<p className="help-block" style={errPhone} >Debe ser un teléfono valido. </p>
+					<p className="help-block" style={errPhone}>{messages.phone}</p>
 				</div>
 
 				<div className="form-group">
@@ -107,7 +121,7 @@ const ContactForm = React.createClass({
 						value={ company }
 						onChange={this.handleChange.bind(null, 'company')} 
 					/>
-					<p className="help-block" style={errEmail} >Empresa requerida.</p>
+					<p className="help-block" style={errEmail}>{messages.company}</p>
 				</div>
 				
 				<div className="form-group">
