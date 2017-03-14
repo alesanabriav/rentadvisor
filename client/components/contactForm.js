@@ -44,21 +44,15 @@ const ContactForm = React.createClass({
 	validate() {
 		let errs = {};
 		let v = validate(this.state.errors, this.state.rules, this.state);
-		console.log(v);
+
 		this.setState({errors: v.errors});
-		return v.promise;
+		console.log(v.isValid);
 	},
 
 	handleSubmit(e) {
 		e.preventDefault();
 
-		this.validate()
-			.then(res => res.every(item => item == false))
-			.then(isValid => {
-				if(isValid) {
-					console.log(this.state);
-				}
-			});
+		this.validate();
 	},
 
 	storeContact() {

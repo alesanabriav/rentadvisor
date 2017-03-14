@@ -14,7 +14,7 @@ function containsNumber(phone) {
 }
 
 function higherThen(str, num) {
-	return str.length > num;
+	return str.length < num;
 }
 
  const validations = {
@@ -24,24 +24,37 @@ function higherThen(str, num) {
 	higherThen
 };
 
+function runValidation(rule, param) {
+	let patt = new RegExp('([A-Z]+)(:)([0-9]+)', 'i');
+	if(patt.test(rule)) {
+		let r = rule.split(':');
+		let func = r[0];
+		let funcParam = r[1];
+		return validations[func] ? validations[func](param, funcParam) : false;
+	}
+
+	return validations[rule] ? validations[rule](param) : false;
+}
+
 export function validate(errors = {}, rules = {}, fields = {}) {
 		let errs = {};
 	
 		const runValidations = Object.keys(errors)
 			.map(field => {
-				let val;
-				rules[field].split('|').forEach(rule => {
-					if(/:/)
-					val = validations[rule] ? validations[rule](fields[field]) : false;
+
+				let val = rules[field].split('|').map(rule => {
+					return runValidation(rule, fields[field]);
 				});
 
-				errs = {...errs, [field]: val};
+				let isValid = !val.every(item => item == false);
+
+				errs = {...errs, [field]: isValid};
 				return val;
 		});
 
 		return {
 			errors: errs,
-			promise: Promise.all(runValidations)
+			isValid: runValidations.every(item => item == false)
 		};
 }
 
