@@ -1,5 +1,7 @@
 'use strict';
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
 
 module.exports = {
   watch: true,
@@ -7,7 +9,7 @@ module.exports = {
   	app: './client/app.js'
   },
   output: {
-  	path: './public/js',
+  	path:  path.join(__dirname, '/public/js'),
     filename: '[name].js'
   },
   module: {
@@ -34,7 +36,14 @@ module.exports = {
 		]
   },
 	plugins: [
-    new ExtractTextPlugin("styles.css"),
-  ]
+    new HtmlWebpackPlugin({
+      template: './index.ejs'
+    })
+  ],
+  devServer: {
+    contentBase: path.join(__dirname, "public/js"),
+    compress: true,
+    port: 8000
+}
 };
 
